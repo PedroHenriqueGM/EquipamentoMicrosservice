@@ -13,4 +13,7 @@ public interface TrancaRepository extends JpaRepository<Tranca, Integer> {
 
     @Transactional
     void deleteByNumero(String numero);
+
+    // === R4: existe alguma tranca ocupando esta bicicleta? ===
+    boolean existsByBicicletaId(Integer bicicletaId);
 }

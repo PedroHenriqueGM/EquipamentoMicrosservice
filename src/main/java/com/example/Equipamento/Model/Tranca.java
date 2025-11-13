@@ -1,5 +1,6 @@
 package com.example.Equipamento.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,4 +31,10 @@ public class Tranca {
 
     @Column(name = "ano")
     private String ano;
+
+    // === R4: vínculo 1:1 com Bicicleta (tranca ocupada por uma bicicleta) ===
+    @OneToOne
+    @JoinColumn(name = "bicicleta_id", unique = true)
+    @JsonIgnore // evita loop em respostas JSON
+    private Bicicleta bicicleta;
 }

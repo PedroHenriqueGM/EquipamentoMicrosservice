@@ -32,8 +32,9 @@ public class TrancaController {
         return ResponseEntity.ok(trancas);
     }
 
+
     @DeleteMapping("/{numero}")
-    public ResponseEntity<Void> deletarTrancaPorNumero(@RequestParam String numero) {
+    public ResponseEntity<Void> deletarTrancaPorNumero(@PathVariable String numero) {
         trancaService.deletarTrancaPorNumero(numero);
         return ResponseEntity.ok().build();
     }
@@ -45,5 +46,21 @@ public class TrancaController {
         trancaService.atualizarTrancaPorId(id, tranca);
         return ResponseEntity.ok().build();
     }
+
+    // TrancaController.java (acrescente)
+    @PutMapping("/{numero}/trancar")
+    public ResponseEntity<Void> trancar(
+            @PathVariable String numero,
+            @RequestParam(value = "bicicletaNumero", required = false) String bicicletaNumero) {
+        trancaService.trancarPorNumero(numero, bicicletaNumero);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{numero}/destrancar")
+    public ResponseEntity<Void> destrancar(@PathVariable String numero) {
+        trancaService.destrancarPorNumero(numero);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

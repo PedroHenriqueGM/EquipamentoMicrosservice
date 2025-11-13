@@ -31,10 +31,15 @@ public class BicicletaController {
         return ResponseEntity.ok(bicicletas);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Bicicleta> buscarPorId(@PathVariable Integer id){
+        return ResponseEntity.ok(bicicletaService.buscarPorId(id));
+    }
+
     @DeleteMapping("/{numero}")
-    public ResponseEntity<Void> deletarBicicletaPorNumero(@RequestParam String numero) {
+    public ResponseEntity<Void> deletarBicicletaPorNumero(@PathVariable String numero) {
         bicicletaService.deletarBicicletaPorNumero(numero);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
