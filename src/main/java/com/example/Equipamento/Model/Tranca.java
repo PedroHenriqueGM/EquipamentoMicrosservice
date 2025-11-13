@@ -37,4 +37,9 @@ public class Tranca {
     @JoinColumn(name = "bicicleta_id", unique = true)
     @JsonIgnore // evita loop em respostas JSON
     private Bicicleta bicicleta;
+
+    @ManyToOne
+    @JoinColumn(name = "totem_id") 
+    @JsonIgnore 
+    private Totem totem;
 }
