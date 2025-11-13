@@ -18,6 +18,8 @@ public class TrancaService {
         this.bicicletaRepository = bicicletaRepository;
     }
 
+    private static final String MSG_TRANCA_NAO_ENCONTRADA = "Tranca não encontrada";
+
     public void salvarTranca(Tranca tranca) {
         repository.saveAndFlush(tranca);
     }
@@ -28,7 +30,7 @@ public class TrancaService {
 
     public void atualizarTrancaPorId(Integer id, Tranca req) {
         Tranca entity = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tranca não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, MSG_TRANCA_NAO_ENCONTRADA));
 
         if (req.getNumero() != null && !req.getNumero().equals(entity.getNumero())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -43,42 +45,9 @@ public class TrancaService {
         repository.saveAndFlush(entity);
     }
 
-    // ===== Vínculos =====
-
-    public void vincularBicicleta(String numeroTranca, String numeroBicicleta) {
-        Tranca tranca = repository.findByNumero(numeroTranca)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tranca não encontrada"));
-
-        if (tranca.getBicicleta() != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tranca já está ocupada por uma bicicleta");
-        }
-
-        Bicicleta bike = bicicletaRepository.findByNumero(numeroBicicleta)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bicicleta não encontrada"));
-
-        if (repository.existsByBicicletaId(bike.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Esta bicicleta já está presa em outra tranca");
-        }
-
-        tranca.setBicicleta(bike);
-        repository.saveAndFlush(tranca);
-    }
-
-    public void desvincularBicicleta(String numeroTranca) {
-        Tranca tranca = repository.findByNumero(numeroTranca)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tranca não encontrada"));
-
-        if (tranca.getBicicleta() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tranca já está livre");
-        }
-
-        tranca.setBicicleta(null);
-        repository.saveAndFlush(tranca);
-    }
-
     public void trancarPorNumero(String numeroTranca, String numeroBicicleta) {
         Tranca tranca = repository.findByNumero(numeroTranca)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tranca não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, MSG_TRANCA_NAO_ENCONTRADA));
 
         if ("ocupada".equalsIgnoreCase(tranca.getStatus())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tranca já está ocupada");
@@ -109,7 +78,7 @@ public class TrancaService {
 
     public void destrancarPorNumero(String numeroTranca) {
         Tranca tranca = repository.findByNumero(numeroTranca)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tranca não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, MSG_TRANCA_NAO_ENCONTRADA));
 
         if ("livre".equalsIgnoreCase(tranca.getStatus())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tranca já está livre");

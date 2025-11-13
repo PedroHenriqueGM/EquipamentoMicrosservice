@@ -15,6 +15,8 @@ public class BicicletaService {
         this.trancaRepository = trancaRepository;
     }
 
+    private static final String MSG_BICICLETA_NAO_ENCONTRADA = "Bicicleta não encontrada";
+
     public void salvarBicicleta(Bicicleta bicicleta) {
         // R1: status inicial "nova"
         bicicleta.setStatus("nova");
@@ -33,7 +35,7 @@ public class BicicletaService {
 
     public void deletarBicicletaPorNumero(String numero) {
         Bicicleta b = repository.findByNumero(numero)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bicicleta não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, MSG_BICICLETA_NAO_ENCONTRADA));
 
         // R4: apenas 'aposentada'
         if (b.getStatus() == null || !b.getStatus().equalsIgnoreCase("aposentada")) {
@@ -54,13 +56,13 @@ public class BicicletaService {
 
     public Bicicleta buscarPorId(Integer id){
         return repository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Bicicleta não encontrada"));
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, MSG_BICICLETA_NAO_ENCONTRADA));
     }
 
 
     public void atualizarBicicletaPorId(Integer id, Bicicleta req) {
         Bicicleta entity = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bicicleta não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, MSG_BICICLETA_NAO_ENCONTRADA));
 
         // R3 + R5: numero é gerado pelo sistema (BIC-{id}) e NÃO pode ser alterado
         // Se veio 'numero' diferente do atual, rejeita
