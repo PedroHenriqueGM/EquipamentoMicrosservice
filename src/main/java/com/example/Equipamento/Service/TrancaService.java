@@ -4,18 +4,23 @@ import com.example.Equipamento.Model.Bicicleta;
 import com.example.Equipamento.Model.Tranca;
 import com.example.Equipamento.Repository.BicicletaRepository;
 import com.example.Equipamento.Repository.TrancaRepository;
+import com.example.Equipamento.Repository.TotemRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 public class TrancaService {
     private final TrancaRepository repository;
     private final BicicletaRepository bicicletaRepository;
+    private final TotemRepository totemRepository;
 
-    public TrancaService(TrancaRepository repository, BicicletaRepository bicicletaRepository) {
+    public TrancaService(TrancaRepository repository, BicicletaRepository bicicletaRepository,TotemRepository totemRepository) {
         this.repository = repository;
         this.bicicletaRepository = bicicletaRepository;
+        this.totemRepository = totemRepository; 
     }
 
     private static final String MSG_TRANCA_NAO_ENCONTRADA = "Tranca não encontrada";
@@ -94,6 +99,14 @@ public class TrancaService {
 
         tranca.setStatus("livre");
         repository.saveAndFlush(tranca);
+    }
+
+    public List<Tranca> listarTrancasDoTotem(Long idTotem) {
+        if (!totemRepository.existsById(idTotem)) {
+             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Totem não encontrado.");
+        }
+        
+        return repository.findByTotemId(idTotem);
     }
 
 }
