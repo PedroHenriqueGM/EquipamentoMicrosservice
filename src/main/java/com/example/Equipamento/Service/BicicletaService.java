@@ -1,18 +1,28 @@
 package com.example.Equipamento.Service;
 
 import com.example.Equipamento.Model.Bicicleta;
+import com.example.Equipamento.Model.Totem;
+import com.example.Equipamento.Model.Tranca;
 import com.example.Equipamento.Repository.BicicletaRepository;
 import com.example.Equipamento.Repository.TrancaRepository;
+import com.example.Equipamento.Repository.TotemRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List; 
+import java.util.Objects; 
+import java.util.stream.Collectors; 
+
 @Service
 public class BicicletaService {
     private final BicicletaRepository repository;
-    public BicicletaService(BicicletaRepository repository, TrancaRepository trancaRepository) {
+    private final TrancaRepository trancaRepository;
+    private final TotemRepository totemRepository;
+    public BicicletaService(BicicletaRepository repository, TrancaRepository trancaRepository, TotemRepository totemRepository) {
         this.repository = repository;
         this.trancaRepository = trancaRepository;
+        this.totemRepository = totemRepository; 
     }
 
     private static final String MSG_BICICLETA_NAO_ENCONTRADA = "Bicicleta não encontrada";
@@ -31,7 +41,7 @@ public class BicicletaService {
         repository.saveAndFlush(salva);
     }
 
-    private final TrancaRepository trancaRepository; // injete via construtor
+    //private final TrancaRepository trancaRepository; // injete via construtor
 
     public void deletarBicicletaPorNumero(String numero) {
         Bicicleta b = repository.findByNumero(numero)
@@ -89,5 +99,19 @@ public class BicicletaService {
 
         // Numero e Status permanecem como estão
         repository.saveAndFlush(entity);
+    }
+
+    public List<BicicletaDTO> listarBicicletasDoTotem(Long idTotem) {
+        Totem totem = totemRepository.findById(idTotem)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Totem não encontrado."));
+
+        return totem.getTrancas().stream()
+                .map(Tranca::getBicicleta) 
+                .filter(Objects::nonNull)  
+                .map(bicicleta -> new BicicletaDTO( 
+                        bicicleta.getId(), 
+                        bicicleta.getNumero(), 
+                        bicicleta.getStatus()))
+                .collect(Collectors.toList());
     }
 }
