@@ -1,16 +1,12 @@
-FROM ubuntu:latest AS build
-
-RUN apt-get update
-RUN apt-get install openjdk-21-jdk -y
+# Etapa 1: Build
+FROM maven:3.9.9-eclipse-temurin-21 AS build
+WORKDIR /app
 COPY . .
+RUN mvn clean package -DskipTests
 
-RUN apt-get install maven -y
-RUN mvn clean install
-
-FROM openjdk:21-jdk-slim
-
-EXPOSE 8081
-
-COPY --from=build /target/deploy_render-1.0.0.jar app.jar
-
-ENTRYPOINT [ "java", "-jar", "app.jar" ]
+# Etapa 2: Execução
+FROM eclipse-temurin:21-jdk
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
